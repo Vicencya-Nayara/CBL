@@ -1,0 +1,71 @@
+import Foundation
+
+func contarPalavras(em arquivo: String) {
+    do {
+        let texto = try String(contentsOfFile: arquivo, encoding: .utf8)
+        let palavras = texto.split { !$0.isLetter }
+        print("Total de palavras: \(palavras.count)")
+    } catch {
+        print("Erro ao ler o arquivo: \(error.localizedDescription)")
+    }
+}
+
+
+func buscarPalavra(em arquivo: String, palavra: String) {
+    do {
+        let texto = try String(contentsOfFile: arquivo, encoding: .utf8)
+        let ocorrencias = texto.lowercased().split { !$0.isLetter }.filter { $0.lowercased() == palavra.lowercased() }
+        print("A palavra '\(palavra)' aparece \(ocorrencias.count) vezes.")
+    } catch {
+        print("Erro ao ler o arquivo: \(error.localizedDescription)")
+    }
+}
+
+func substituirPalavra(em arquivo: String, palavraAntiga: String, palavraNova: String) {
+    do {
+        var texto = try String(contentsOfFile: arquivo, encoding: .utf8)
+        texto = texto.replacingOccurrences(of: palavraAntiga, with: palavraNova)
+        try texto.write(toFile: arquivo, atomically: true, encoding: .utf8)
+        print("A palavra '\(palavraAntiga)' foi substituída por '\(palavraNova)'.")
+    } catch {
+        print("Erro ao ler ou escrever no arquivo: \(error.localizedDescription)")
+    }
+}
+
+
+func menu() {
+    print("1. Contar palavras")
+    print("2. Buscar palavra")
+    print("3. Substituir palavra")
+    print("Escolha uma opção: ", terminator: "")
+    
+    if let opcao = readLine() {
+        if let escolha = Int(opcao) {
+            print("Digite o caminho do arquivo: ", terminator: "")
+            if let caminhoArquivo = readLine() {
+                switch escolha {
+                case 1:
+                    contarPalavras(em: caminhoArquivo)
+                case 2:
+                    print("Digite a palavra a ser buscada: ", terminator: "")
+                    if let palavraBusca = readLine() {
+                        buscarPalavra(em: caminhoArquivo, palavra: palavraBusca)
+                    }
+                case 3:
+                    print("Digite a palavra a ser substituída: ", terminator: "")
+                    if let palavraAntiga = readLine() {
+                        print("Digite a nova palavra: ", terminator: "")
+                        if let palavraNova = readLine() {
+                            substituirPalavra(em: caminhoArquivo, palavraAntiga: palavraAntiga, palavraNova: palavraNova)
+                        }
+                    }
+                default:
+                    print("Opção inválida")
+                }
+            }
+        }
+    }
+}
+
+
+menu()
